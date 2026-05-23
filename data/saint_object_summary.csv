@@ -1,0 +1,9 @@
+metric,value,notes
+visible_relic_records,112,From data/relic_index_visible.csv
+working_saint_entity_objects,113,Composite labels split where named individuals are visible; unresolved labels remain separate
+preliminary_unverified_objects,82,Working biographical scaffolding; requires source verification before publication
+needs_identity_review_objects,19,Label does not identify which saint or has unresolved identity ambiguity
+needs_label_review_objects,5,Visible label appears to contain spelling/normalization issue
+needs_canonical_status_review_objects,3,Visible S. label may not align with current canonical title/status
+group_or_group_member_objects,7,Includes group labels and individual objects generated from composite visible labels
+historical_cultus_sensitive_objects,1,Requires special canonical/historical review before public interpretation
