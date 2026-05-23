@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
-"""Auto-crop relic/object images photographed on a white or near-white background.
+"""Auto-crop and classify isolated relic/object photos on white backgrounds.
 
 This script detects the bounding box of pixels that differ from a white/background
-field, adds padding, and writes cropped images. It is designed for isolated relic,
-theca, certificate, or object photographs placed on a white/light background.
+field, adds padding, writes cropped images, and records basic visual measurements.
 
-It is not intended to segment the red-lined reliquary display cases. For those,
-use manual crop coordinates or a separate object-detection workflow.
+Important: canonical relic class (first-, second-, or third-class relic) cannot be
+determined from size and shape alone. That classification requires a theca label,
+certificate, or provenance document. This script therefore reports:
+
+- visual_design_guess: shape/container/design class inferred from image geometry
+- canonical_relic_class_guess: always "not_determinable_from_image_alone"
+
+It is designed for isolated relic, theca, certificate, or object photographs placed
+on a white/light background. It is not intended to segment the red-lined reliquary
+wall-case photographs.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import math
 import statistics
 import sys
 from pathlib import Path
@@ -61,38 +69,38 @@ def pixel_distance(a: tuple[int, int, int], b: tuple[int, int, int]) -> int:
     return max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2]))
 
 
-def find_foreground_bbox(
+def foreground_points(
     image: Image.Image,
     background: tuple[int, int, int],
     tolerance: int,
     alpha_threshold: int,
     scan_step: int,
-) -> tuple[int, int, int, int] | None:
+) -> list[tuple[int, int]]:
     rgba = image.convert("RGBA")
     w, h = rgba.size
     px = rgba.load()
-
-    min_x = w
-    min_y = h
-    max_x = -1
-    max_y = -1
-
+    points: list[tuple[int, int]] = []
     step = max(1, scan_step)
+
     for y in range(0, h, step):
         for x in range(0, w, step):
             r, g, b, a = px[x, y]
             if a <= alpha_threshold:
                 continue
             if pixel_distance((r, g, b), background) > tolerance:
-                min_x = min(min_x, x)
-                min_y = min(min_y, y)
-                max_x = max(max_x, x)
-                max_y = max(max_y, y)
+                points.append((x, y))
+    return points
 
-    if max_x < min_x or max_y < min_y:
+
+def bbox_from_points(points: list[tuple[int, int]], image_size: tuple[int, int], scan_step: int) -> tuple[int, int, int, int] | None:
+    if not points:
         return None
-
-    # Expand by scan step so sparse scanning does not under-crop.
+    w, h = image_size
+    step = max(1, scan_step)
+    min_x = min(x for x, _ in points)
+    min_y = min(y for _, y in points)
+    max_x = max(x for x, _ in points)
+    max_y = max(y for _, y in points)
     return (
         max(0, min_x - step),
         max(0, min_y - step),
@@ -125,9 +133,49 @@ def bbox_area(bbox: tuple[int, int, int, int]) -> int:
 def output_path_for(source: Path, input_root: Path, output_dir: Path, suffix: str) -> Path:
     if input_root.is_dir():
         rel = source.relative_to(input_root)
-        stem_path = output_dir / rel.parent / f"{rel.stem}{suffix}{rel.suffix.lower()}"
-        return stem_path
+        return output_dir / rel.parent / f"{rel.stem}{suffix}{rel.suffix.lower()}"
     return output_dir / f"{source.stem}{suffix}{source.suffix.lower()}"
+
+
+def classify_visual_design(
+    bbox: tuple[int, int, int, int],
+    foreground_pixel_count: int,
+    image_size: tuple[int, int],
+) -> tuple[str, str]:
+    left, top, right, bottom = bbox
+    width = max(1, right - left)
+    height = max(1, bottom - top)
+    aspect = width / height
+    bbox_fill = foreground_pixel_count / max(1, width * height)
+    image_fill = (width * height) / max(1, image_size[0] * image_size[1])
+
+    # These are visual/design guesses only. They do not assert canonical relic class.
+    if 0.85 <= aspect <= 1.18 and 0.62 <= bbox_fill <= 0.90:
+        return "round_or_oval_theca_or_medallion", "medium"
+    if 0.65 <= aspect <= 1.45 and bbox_fill < 0.55:
+        return "openwork_or_cross_shaped_reliquary_candidate", "low"
+    if aspect >= 2.6 and bbox_fill >= 0.45:
+        return "horizontal_label_or_document_strip", "medium"
+    if aspect <= 0.45 and bbox_fill >= 0.45:
+        return "vertical_card_certificate_or_tall_reliquary", "medium"
+    if 0.55 <= aspect <= 1.85 and bbox_fill >= 0.78 and image_fill > 0.25:
+        return "rectangular_card_certificate_or_case_detail", "medium"
+    if 0.55 <= aspect <= 1.85 and 0.40 <= bbox_fill < 0.78:
+        return "irregular_theca_reliquary_or_object", "low"
+    return "unclassified_visual_object", "low"
+
+
+def physical_size_estimate(
+    bbox: tuple[int, int, int, int], dpi: float | None,
+) -> tuple[str, str, str]:
+    left, top, right, bottom = bbox
+    width_px = right - left
+    height_px = bottom - top
+    if not dpi or dpi <= 0:
+        return "", "", "No DPI or scale reference supplied. Physical size cannot be estimated."
+    width_mm = width_px / dpi * 25.4
+    height_mm = height_px / dpi * 25.4
+    return f"{width_mm:.2f}", f"{height_mm:.2f}", "Estimated from supplied DPI; use ruler/scale card for publication-grade measurement."
 
 
 def crop_one(
@@ -143,6 +191,7 @@ def crop_one(
     scan_step: int,
     min_area: int,
     overwrite: bool,
+    dpi: float | None,
 ) -> dict[str, str]:
     with Image.open(source) as image:
         image.load()
@@ -151,13 +200,14 @@ def crop_one(
         else:
             background = (255, 255, 255)
 
-        bbox = find_foreground_bbox(
+        points = foreground_points(
             image=image,
             background=background,
             tolerance=tolerance,
             alpha_threshold=alpha_threshold,
             scan_step=scan_step,
         )
+        bbox = bbox_from_points(points, image.size, scan_step)
         if bbox is None:
             return {
                 "source": str(source),
@@ -165,6 +215,16 @@ def crop_one(
                 "status": "no_foreground_detected",
                 "background_rgb": str(background),
                 "bbox": "",
+                "bbox_width_px": "",
+                "bbox_height_px": "",
+                "foreground_pixel_count": "0",
+                "bbox_fill_ratio": "",
+                "visual_design_guess": "not_detected",
+                "visual_design_confidence": "none",
+                "canonical_relic_class_guess": "not_determinable_from_image_alone",
+                "estimated_width_mm": "",
+                "estimated_height_mm": "",
+                "measurement_notes": "",
                 "notes": "Increase tolerance downward or check that background is white/light.",
             }
 
@@ -177,36 +237,79 @@ def crop_one(
                 "status": "foreground_below_min_area",
                 "background_rgb": str(background),
                 "bbox": str(padded),
+                "bbox_width_px": str(padded[2] - padded[0]),
+                "bbox_height_px": str(padded[3] - padded[1]),
+                "foreground_pixel_count": str(len(points)),
+                "bbox_fill_ratio": "",
+                "visual_design_guess": "too_small_to_classify",
+                "visual_design_confidence": "none",
+                "canonical_relic_class_guess": "not_determinable_from_image_alone",
+                "estimated_width_mm": "",
+                "estimated_height_mm": "",
+                "measurement_notes": "",
                 "notes": f"Area {area} below min_area {min_area}.",
             }
 
         output = output_path_for(source, input_root, output_dir, suffix)
         output.parent.mkdir(parents=True, exist_ok=True)
         if output.exists() and not overwrite:
-            return {
-                "source": str(source),
-                "output": str(output),
-                "status": "skipped_exists",
-                "background_rgb": str(background),
-                "bbox": str(padded),
-                "notes": "Use --overwrite to replace.",
-            }
+            status = "skipped_exists"
+        else:
+            cropped = image.crop(padded)
+            cropped.save(output, quality=95)
+            status = "cropped"
 
-        cropped = image.crop(padded)
-        cropped.save(output, quality=95)
+        left, top, right, bottom = bbox
+        width_px = max(1, right - left)
+        height_px = max(1, bottom - top)
+        fill_ratio = len(points) / max(1, width_px * height_px)
+        design_guess, design_confidence = classify_visual_design(bbox, len(points), image.size)
+        width_mm, height_mm, measurement_notes = physical_size_estimate(bbox, dpi)
+
+        notes = ""
+        if status == "skipped_exists":
+            notes = "Use --overwrite to replace."
+
         return {
             "source": str(source),
             "output": str(output),
-            "status": "cropped",
+            "status": status,
             "background_rgb": str(background),
             "bbox": str(padded),
-            "notes": "",
+            "bbox_width_px": str(padded[2] - padded[0]),
+            "bbox_height_px": str(padded[3] - padded[1]),
+            "foreground_pixel_count": str(len(points)),
+            "bbox_fill_ratio": f"{fill_ratio:.4f}",
+            "visual_design_guess": design_guess,
+            "visual_design_confidence": design_confidence,
+            "canonical_relic_class_guess": "not_determinable_from_image_alone",
+            "estimated_width_mm": width_mm,
+            "estimated_height_mm": height_mm,
+            "measurement_notes": measurement_notes,
+            "notes": notes,
         }
 
 
 def write_report(rows: list[dict[str, str]], report_path: Path) -> None:
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["source", "output", "status", "background_rgb", "bbox", "notes"]
+    fieldnames = [
+        "source",
+        "output",
+        "status",
+        "background_rgb",
+        "bbox",
+        "bbox_width_px",
+        "bbox_height_px",
+        "foreground_pixel_count",
+        "bbox_fill_ratio",
+        "visual_design_guess",
+        "visual_design_confidence",
+        "canonical_relic_class_guess",
+        "estimated_width_mm",
+        "estimated_height_mm",
+        "measurement_notes",
+        "notes",
+    ]
     with report_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
@@ -215,7 +318,7 @@ def write_report(rows: list[dict[str, str]], report_path: Path) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Auto-crop objects photographed on white or near-white backgrounds."
+        description="Auto-crop and visually classify objects photographed on white or near-white backgrounds."
     )
     parser.add_argument("--input", required=True, help="Input image or directory.")
     parser.add_argument("--output-dir", required=True, help="Directory for cropped outputs.")
@@ -257,6 +360,12 @@ def parse_args() -> argparse.Namespace:
         default=1000,
         help="Minimum crop area in pixels before output is accepted.",
     )
+    parser.add_argument(
+        "--dpi",
+        type=float,
+        default=None,
+        help="Optional DPI or pixels-per-inch scale for rough physical size estimates.",
+    )
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing crops.")
     parser.add_argument(
         "--report",
@@ -297,9 +406,14 @@ def main() -> int:
                 scan_step=args.scan_step,
                 min_area=args.min_area,
                 overwrite=args.overwrite,
+                dpi=args.dpi,
             )
             rows.append(result)
-            print(f"{result['status']}: {image_path} -> {result['output']}")
+            print(
+                f"{result['status']}: {image_path} -> {result['output']} | "
+                f"design={result['visual_design_guess']} | "
+                f"canonical_class={result['canonical_relic_class_guess']}"
+            )
         except Exception as exc:  # noqa: BLE001 - image batch job should continue across files
             rows.append(
                 {
@@ -308,6 +422,16 @@ def main() -> int:
                     "status": "error",
                     "background_rgb": "",
                     "bbox": "",
+                    "bbox_width_px": "",
+                    "bbox_height_px": "",
+                    "foreground_pixel_count": "",
+                    "bbox_fill_ratio": "",
+                    "visual_design_guess": "error",
+                    "visual_design_confidence": "none",
+                    "canonical_relic_class_guess": "not_determinable_from_image_alone",
+                    "estimated_width_mm": "",
+                    "estimated_height_mm": "",
+                    "measurement_notes": "",
                     "notes": str(exc),
                 }
             )
