@@ -1,26 +1,19 @@
 #!/usr/bin/env python3
-"""Auto-crop and classify isolated relic/object photos on white backgrounds.
+"""Auto-crop and visually classify isolated relic/object photos.
 
-This script detects the bounding box of pixels that differ from a white/background
-field, adds padding, writes cropped images, and records basic visual measurements.
+This is a researcher-aide tool. It crops objects photographed on a white or
+near-white background and assigns a non-canonical visual class to help narrow
+review work.
 
-Important: canonical relic class (first-, second-, or third-class relic) cannot be
-determined from size and shape alone. That classification requires a theca label,
-certificate, or provenance document. This script therefore reports:
-
-- visual_design_guess: shape/container/design class inferred from image geometry
-- canonical_relic_class_guess: always "not_determinable_from_image_alone"
-
-It is designed for isolated relic, theca, certificate, or object photographs placed
-on a white/light background. It is not intended to segment the red-lined reliquary
-wall-case photographs.
+It does not determine first-, second-, or third-class relic status. Canonical
+relic class requires documentary evidence such as a theca inscription,
+authentication document, custody record, or other provenance evidence.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
-import math
 import statistics
 import sys
 from pathlib import Path
@@ -29,6 +22,18 @@ from typing import Iterable
 from PIL import Image
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp"}
+
+VISUAL_CLASSES = {
+    "VCLASS-001": "round_or_oval_theca_or_medallion_candidate",
+    "VCLASS-002": "cross_or_openwork_reliquary_candidate",
+    "VCLASS-003": "horizontal_label_or_document_strip_candidate",
+    "VCLASS-004": "vertical_card_certificate_or_tall_mount_candidate",
+    "VCLASS-005": "rectangular_card_certificate_or_case_detail_candidate",
+    "VCLASS-006": "irregular_theca_reliquary_or_object_candidate",
+    "VCLASS-007": "small_fragment_or_loose_material_candidate",
+    "VCLASS-008": "seal_or_wax_impression_candidate",
+    "VCLASS-999": "unclassified_visual_object",
+}
 
 
 def iter_images(input_path: Path) -> Iterable[Path]:
@@ -45,9 +50,8 @@ def border_sample(image: Image.Image, width: int) -> list[tuple[int, int, int]]:
     rgb = image.convert("RGB")
     w, h = rgb.size
     px = rgb.load()
-    sample: list[tuple[int, int, int]] = []
     border = max(1, min(width, w // 4, h // 4))
-
+    sample: list[tuple[int, int, int]] = []
     for y in range(h):
         for x in range(w):
             if x < border or x >= w - border or y < border or y >= h - border:
@@ -59,10 +63,11 @@ def median_background(image: Image.Image, border_width: int) -> tuple[int, int, 
     sample = border_sample(image, border_width)
     if not sample:
         return (255, 255, 255)
-    r = int(statistics.median(pixel[0] for pixel in sample))
-    g = int(statistics.median(pixel[1] for pixel in sample))
-    b = int(statistics.median(pixel[2] for pixel in sample))
-    return (r, g, b)
+    return (
+        int(statistics.median(pixel[0] for pixel in sample)),
+        int(statistics.median(pixel[1] for pixel in sample)),
+        int(statistics.median(pixel[2] for pixel in sample)),
+    )
 
 
 def pixel_distance(a: tuple[int, int, int], b: tuple[int, int, int]) -> int:
@@ -79,8 +84,8 @@ def foreground_points(
     rgba = image.convert("RGBA")
     w, h = rgba.size
     px = rgba.load()
-    points: list[tuple[int, int]] = []
     step = max(1, scan_step)
+    points: list[tuple[int, int]] = []
 
     for y in range(0, h, step):
         for x in range(0, w, step):
@@ -92,7 +97,11 @@ def foreground_points(
     return points
 
 
-def bbox_from_points(points: list[tuple[int, int]], image_size: tuple[int, int], scan_step: int) -> tuple[int, int, int, int] | None:
+def bbox_from_points(
+    points: list[tuple[int, int]],
+    image_size: tuple[int, int],
+    scan_step: int,
+) -> tuple[int, int, int, int] | None:
     if not points:
         return None
     w, h = image_size
@@ -137,36 +146,70 @@ def output_path_for(source: Path, input_root: Path, output_dir: Path, suffix: st
     return output_dir / f"{source.stem}{suffix}{source.suffix.lower()}"
 
 
-def classify_visual_design(
+def visual_classification(
     bbox: tuple[int, int, int, int],
     foreground_pixel_count: int,
     image_size: tuple[int, int],
-) -> tuple[str, str]:
+) -> dict[str, str]:
     left, top, right, bottom = bbox
     width = max(1, right - left)
     height = max(1, bottom - top)
     aspect = width / height
-    bbox_fill = foreground_pixel_count / max(1, width * height)
+    fill = foreground_pixel_count / max(1, width * height)
     image_fill = (width * height) / max(1, image_size[0] * image_size[1])
 
-    # These are visual/design guesses only. They do not assert canonical relic class.
-    if 0.85 <= aspect <= 1.18 and 0.62 <= bbox_fill <= 0.90:
-        return "round_or_oval_theca_or_medallion", "medium"
-    if 0.65 <= aspect <= 1.45 and bbox_fill < 0.55:
-        return "openwork_or_cross_shaped_reliquary_candidate", "low"
-    if aspect >= 2.6 and bbox_fill >= 0.45:
-        return "horizontal_label_or_document_strip", "medium"
-    if aspect <= 0.45 and bbox_fill >= 0.45:
-        return "vertical_card_certificate_or_tall_reliquary", "medium"
-    if 0.55 <= aspect <= 1.85 and bbox_fill >= 0.78 and image_fill > 0.25:
-        return "rectangular_card_certificate_or_case_detail", "medium"
-    if 0.55 <= aspect <= 1.85 and 0.40 <= bbox_fill < 0.78:
-        return "irregular_theca_reliquary_or_object", "low"
-    return "unclassified_visual_object", "low"
+    if width < 120 and height < 120:
+        class_id = "VCLASS-007"
+        confidence = "low"
+        rationale = "Detected object is very small in pixel dimensions."
+        next_step = "Retake with macro focus and scale card; inspect whether this is loose material, dust, label artifact, or image noise."
+    elif 0.85 <= aspect <= 1.18 and 0.58 <= fill <= 0.92:
+        class_id = "VCLASS-001"
+        confidence = "medium"
+        rationale = "Near-round bounding box and moderate-to-high foreground fill."
+        next_step = "Inspect front and reverse; capture theca paper inscription and seal/thread details."
+    elif 0.55 <= aspect <= 1.45 and fill < 0.55:
+        class_id = "VCLASS-002"
+        confidence = "low"
+        rationale = "Near-square/tall object with lower fill ratio, consistent with openwork or cross-like negative space."
+        next_step = "Review manually for cross arms, ring, suspension loop, and theca placement."
+    elif aspect >= 2.6 and fill >= 0.35:
+        class_id = "VCLASS-003"
+        confidence = "medium"
+        rationale = "Wide horizontal object."
+        next_step = "Run OCR or manual transcription; likely label strip, document strip, or horizontal certificate detail."
+    elif aspect <= 0.45 and fill >= 0.35:
+        class_id = "VCLASS-004"
+        confidence = "medium"
+        rationale = "Tall narrow object."
+        next_step = "Inspect whether this is a vertical card, certificate, tall mount, or long reliquary object."
+    elif 0.55 <= aspect <= 1.85 and fill >= 0.78 and image_fill > 0.20:
+        class_id = "VCLASS-005"
+        confidence = "medium"
+        rationale = "Rectangular or card-like object with high fill ratio."
+        next_step = "Check for certificate text, card borders, typed labels, or mounted display backing."
+    elif 0.55 <= aspect <= 1.85 and 0.38 <= fill < 0.78:
+        class_id = "VCLASS-006"
+        confidence = "low"
+        rationale = "Object is bounded but visually irregular."
+        next_step = "Manual review required; may be theca, reliquary object, seal, or mixed object/background."
+    else:
+        class_id = "VCLASS-999"
+        confidence = "low"
+        rationale = "Geometry did not match a controlled visual class."
+        next_step = "Manual review required; retake on cleaner background if needed."
+
+    return {
+        "visual_class_id": class_id,
+        "visual_class_label": VISUAL_CLASSES[class_id],
+        "visual_class_confidence": confidence,
+        "visual_class_rationale": rationale,
+        "research_next_step": next_step,
+    }
 
 
 def physical_size_estimate(
-    bbox: tuple[int, int, int, int], dpi: float | None,
+    bbox: tuple[int, int, int, int], dpi: float | None
 ) -> tuple[str, str, str]:
     left, top, right, bottom = bbox
     width_px = right - left
@@ -176,6 +219,30 @@ def physical_size_estimate(
     width_mm = width_px / dpi * 25.4
     height_mm = height_px / dpi * 25.4
     return f"{width_mm:.2f}", f"{height_mm:.2f}", "Estimated from supplied DPI; use ruler/scale card for publication-grade measurement."
+
+
+def base_result(source: Path, status: str, notes: str = "") -> dict[str, str]:
+    return {
+        "source": str(source),
+        "output": "",
+        "status": status,
+        "background_rgb": "",
+        "bbox": "",
+        "bbox_width_px": "",
+        "bbox_height_px": "",
+        "foreground_pixel_count": "",
+        "bbox_fill_ratio": "",
+        "visual_class_id": "VCLASS-999",
+        "visual_class_label": VISUAL_CLASSES["VCLASS-999"],
+        "visual_class_confidence": "none",
+        "visual_class_rationale": "No reliable foreground object was classified.",
+        "canonical_relic_class_status": "requires_theca_or_documentary_verification",
+        "estimated_width_mm": "",
+        "estimated_height_mm": "",
+        "measurement_notes": "",
+        "research_next_step": "Manual review required.",
+        "notes": notes,
+    }
 
 
 def crop_one(
@@ -195,82 +262,42 @@ def crop_one(
 ) -> dict[str, str]:
     with Image.open(source) as image:
         image.load()
-        if background_mode == "auto":
-            background = median_background(image, border_width)
-        else:
-            background = (255, 255, 255)
-
-        points = foreground_points(
-            image=image,
-            background=background,
-            tolerance=tolerance,
-            alpha_threshold=alpha_threshold,
-            scan_step=scan_step,
-        )
+        background = median_background(image, border_width) if background_mode == "auto" else (255, 255, 255)
+        points = foreground_points(image, background, tolerance, alpha_threshold, scan_step)
         bbox = bbox_from_points(points, image.size, scan_step)
+
         if bbox is None:
-            return {
-                "source": str(source),
-                "output": "",
-                "status": "no_foreground_detected",
-                "background_rgb": str(background),
-                "bbox": "",
-                "bbox_width_px": "",
-                "bbox_height_px": "",
-                "foreground_pixel_count": "0",
-                "bbox_fill_ratio": "",
-                "visual_design_guess": "not_detected",
-                "visual_design_confidence": "none",
-                "canonical_relic_class_guess": "not_determinable_from_image_alone",
-                "estimated_width_mm": "",
-                "estimated_height_mm": "",
-                "measurement_notes": "",
-                "notes": "Increase tolerance downward or check that background is white/light.",
-            }
+            result = base_result(source, "no_foreground_detected", "Check white background, shadows, and tolerance setting.")
+            result["background_rgb"] = str(background)
+            return result
 
         padded = pad_bbox(bbox, padding, image.size)
         area = bbox_area(padded)
         if area < min_area:
-            return {
-                "source": str(source),
-                "output": "",
-                "status": "foreground_below_min_area",
-                "background_rgb": str(background),
-                "bbox": str(padded),
-                "bbox_width_px": str(padded[2] - padded[0]),
-                "bbox_height_px": str(padded[3] - padded[1]),
-                "foreground_pixel_count": str(len(points)),
-                "bbox_fill_ratio": "",
-                "visual_design_guess": "too_small_to_classify",
-                "visual_design_confidence": "none",
-                "canonical_relic_class_guess": "not_determinable_from_image_alone",
-                "estimated_width_mm": "",
-                "estimated_height_mm": "",
-                "measurement_notes": "",
-                "notes": f"Area {area} below min_area {min_area}.",
-            }
+            result = base_result(source, "foreground_below_min_area", f"Area {area} below min_area {min_area}.")
+            result["background_rgb"] = str(background)
+            result["bbox"] = str(padded)
+            result["bbox_width_px"] = str(padded[2] - padded[0])
+            result["bbox_height_px"] = str(padded[3] - padded[1])
+            result["foreground_pixel_count"] = str(len(points))
+            return result
 
         output = output_path_for(source, input_root, output_dir, suffix)
         output.parent.mkdir(parents=True, exist_ok=True)
         if output.exists() and not overwrite:
             status = "skipped_exists"
         else:
-            cropped = image.crop(padded)
-            cropped.save(output, quality=95)
+            image.crop(padded).save(output, quality=95)
             status = "cropped"
 
         left, top, right, bottom = bbox
         width_px = max(1, right - left)
         height_px = max(1, bottom - top)
         fill_ratio = len(points) / max(1, width_px * height_px)
-        design_guess, design_confidence = classify_visual_design(bbox, len(points), image.size)
+        class_result = visual_classification(bbox, len(points), image.size)
         width_mm, height_mm, measurement_notes = physical_size_estimate(bbox, dpi)
 
-        notes = ""
-        if status == "skipped_exists":
-            notes = "Use --overwrite to replace."
-
-        return {
+        result = {
             "source": str(source),
             "output": str(output),
             "status": status,
@@ -280,14 +307,14 @@ def crop_one(
             "bbox_height_px": str(padded[3] - padded[1]),
             "foreground_pixel_count": str(len(points)),
             "bbox_fill_ratio": f"{fill_ratio:.4f}",
-            "visual_design_guess": design_guess,
-            "visual_design_confidence": design_confidence,
-            "canonical_relic_class_guess": "not_determinable_from_image_alone",
+            "canonical_relic_class_status": "requires_theca_or_documentary_verification",
             "estimated_width_mm": width_mm,
             "estimated_height_mm": height_mm,
             "measurement_notes": measurement_notes,
-            "notes": notes,
+            "notes": "Use --overwrite to replace." if status == "skipped_exists" else "",
         }
+        result.update(class_result)
+        return result
 
 
 def write_report(rows: list[dict[str, str]], report_path: Path) -> None:
@@ -302,12 +329,15 @@ def write_report(rows: list[dict[str, str]], report_path: Path) -> None:
         "bbox_height_px",
         "foreground_pixel_count",
         "bbox_fill_ratio",
-        "visual_design_guess",
-        "visual_design_confidence",
-        "canonical_relic_class_guess",
+        "visual_class_id",
+        "visual_class_label",
+        "visual_class_confidence",
+        "visual_class_rationale",
+        "canonical_relic_class_status",
         "estimated_width_mm",
         "estimated_height_mm",
         "measurement_notes",
+        "research_next_step",
         "notes",
     ]
     with report_path.open("w", newline="", encoding="utf-8") as handle:
@@ -317,61 +347,20 @@ def write_report(rows: list[dict[str, str]], report_path: Path) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Auto-crop and visually classify objects photographed on white or near-white backgrounds."
-    )
+    parser = argparse.ArgumentParser(description="Auto-crop and visually classify isolated object photos.")
     parser.add_argument("--input", required=True, help="Input image or directory.")
     parser.add_argument("--output-dir", required=True, help="Directory for cropped outputs.")
     parser.add_argument("--suffix", default="_autocrop", help="Output filename suffix.")
-    parser.add_argument(
-        "--background",
-        choices=["white", "auto"],
-        default="auto",
-        help="Use pure white or median border color as background.",
-    )
-    parser.add_argument(
-        "--tolerance",
-        type=int,
-        default=35,
-        help="Foreground threshold. Lower is stricter; higher ignores more near-background pixels.",
-    )
-    parser.add_argument("--padding", type=int, default=40, help="Padding in pixels around detected object.")
-    parser.add_argument(
-        "--border-width",
-        type=int,
-        default=20,
-        help="Border width in pixels used for automatic background sampling.",
-    )
-    parser.add_argument(
-        "--alpha-threshold",
-        type=int,
-        default=0,
-        help="Ignore pixels with alpha at or below this value.",
-    )
-    parser.add_argument(
-        "--scan-step",
-        type=int,
-        default=1,
-        help="Pixel step for scanning. Use 1 for best accuracy.",
-    )
-    parser.add_argument(
-        "--min-area",
-        type=int,
-        default=1000,
-        help="Minimum crop area in pixels before output is accepted.",
-    )
-    parser.add_argument(
-        "--dpi",
-        type=float,
-        default=None,
-        help="Optional DPI or pixels-per-inch scale for rough physical size estimates.",
-    )
-    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing crops.")
-    parser.add_argument(
-        "--report",
-        default="data/auto_crop_report.csv",
-        help="CSV report path.",
-    )
+    parser.add_argument("--background", choices=["white", "auto"], default="auto")
+    parser.add_argument("--tolerance", type=int, default=35)
+    parser.add_argument("--padding", type=int, default=40)
+    parser.add_argument("--border-width", type=int, default=20)
+    parser.add_argument("--alpha-threshold", type=int, default=0)
+    parser.add_argument("--scan-step", type=int, default=1)
+    parser.add_argument("--min-area", type=int, default=1000)
+    parser.add_argument("--dpi", type=float, default=None)
+    parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--report", default="data/auto_crop_report.csv")
     return parser.parse_args()
 
 
@@ -411,30 +400,12 @@ def main() -> int:
             rows.append(result)
             print(
                 f"{result['status']}: {image_path} -> {result['output']} | "
-                f"design={result['visual_design_guess']} | "
-                f"canonical_class={result['canonical_relic_class_guess']}"
+                f"visual_class={result['visual_class_id']}:{result['visual_class_label']} | "
+                f"canonical_status={result['canonical_relic_class_status']}"
             )
-        except Exception as exc:  # noqa: BLE001 - image batch job should continue across files
-            rows.append(
-                {
-                    "source": str(image_path),
-                    "output": "",
-                    "status": "error",
-                    "background_rgb": "",
-                    "bbox": "",
-                    "bbox_width_px": "",
-                    "bbox_height_px": "",
-                    "foreground_pixel_count": "",
-                    "bbox_fill_ratio": "",
-                    "visual_design_guess": "error",
-                    "visual_design_confidence": "none",
-                    "canonical_relic_class_guess": "not_determinable_from_image_alone",
-                    "estimated_width_mm": "",
-                    "estimated_height_mm": "",
-                    "measurement_notes": "",
-                    "notes": str(exc),
-                }
-            )
+        except Exception as exc:  # noqa: BLE001
+            result = base_result(image_path, "error", str(exc))
+            rows.append(result)
             print(f"ERROR: {image_path}: {exc}")
 
     write_report(rows, report_path)
