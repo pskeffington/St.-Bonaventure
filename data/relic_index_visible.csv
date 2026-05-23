@@ -1,47 +1,47 @@
 record_id,section_id,visible_label,normalized_name,theca_inscription_visible,source_images,confidence,verification_status,notes
-REL-0001,A,S. ANDREW CORSINI,Andrew Corsini,,IMG_3236,high,visible_label_only,
-REL-0002,A,S. ANGELO,Angelo,,IMG_3236,high,visible_label_only,
-REL-0003,A,S. ANICETUS,Anicetus,,IMG_3236,high,visible_label_only,
-REL-0004,A,S. ANNA MARIE TAIGI,Anna Maria Taigi,,IMG_3236,high,visible_label_only,Label reads Anna Marie Taigi.
-REL-0005,A,S. ANTONY MARY PUCCI,Antony Mary Pucci,,IMG_3202,medium,visible_label_only,Left label partly visible.
-REL-0006,A,S. ANTONIUS OF FLORENCE,Antoninus of Florence,,IMG_3202,high,visible_label_only,Label uses Antonius of Florence.
-REL-0007,A,S. APOLONIA,Apollonia,,IMG_3202,high,visible_label_only,Label spelling Apolonia.
-REL-0008,A,S. ARNOLD JANSSEN,Arnold Janssen,,IMG_3202,high,visible_label_only,
-REL-0009,A,S. BAPTISTA MANTUANUS,Baptista Mantuanus,,IMG_3202,high,visible_label_only,
-REL-0010,B,S. BEATRICE,Beatrice,,IMG_3237,high,visible_label_only,
-REL-0011,B,S. BEATRICE OF SILVA,Beatrice of Silva,,IMG_3237; IMG_3238,high,visible_label_only,
-REL-0012,B,S. BENEDICT XI,Benedict XI,,IMG_3237; IMG_3238,high,visible_label_only,
-REL-0013,B,S. BENEDICT JOSEPH LABRE,Benedict Joseph Labre,,IMG_3238,high,visible_label_only,
-REL-0014,B,S. BERNARD OF CLAIRVAUX,Bernard of Clairvaux,,IMG_3237,high,visible_label_only,
-REL-0015,B,S. BLANDINA,Blandina,,IMG_3237,high,visible_label_only,
-REL-0016,B,S. BONAVENTURE,Bonaventure,,IMG_3237,high,visible_label_only,Project anchor label.
-REL-0017,C,S. BRIDGET OF SWEDEN,Bridget of Sweden,,IMG_3226,high,visible_label_only,
-REL-0018,C,S. BRIGIDA,Brigida,,IMG_3226,high,visible_label_only,
-REL-0019,C,S. CALLIXTUS I,Callixtus I,,IMG_3226; IMG_3235,high,visible_label_only,
-REL-0020,C,S. CAMILLUS DE LELLIS,Camillus de Lellis,,IMG_3226; IMG_3235,high,visible_label_only,
-REL-0021,C,S. CANADIAN MARTYRS,Canadian Martyrs,,IMG_3235,high,visible_label_only,Group label.
-REL-0022,C,S. CASSIAN OF IMOLA,Cassian of Imola,,IMG_3234,high,visible_label_only,
-REL-0023,C,S. CATHERINE LABOURE,Catherine Laboure,,IMG_3234,high,visible_label_only,
-REL-0024,C,"S. CECILIA, VALERIAN, TIBURTIUS","Cecilia, Valerian, Tiburtius",,IMG_3234,high,visible_label_only,Group label.
-REL-0025,C,S. CHARBEL MAKHLLOUF,Charbel Makhlouf,,IMG_3234,high,visible_label_only,Label appears to spell Makhlouf/Makhlouf; verify.
-REL-0026,C,S. CHARLES GARNIER,Charles Garnier,,IMG_3233,high,visible_label_only,
-REL-0027,C,S. CHARLES LWANGA,Charles Lwanga,,IMG_3233,high,visible_label_only,
-REL-0028,C,S. CHRISTINA,Christina,,IMG_3233,high,visible_label_only,
-REL-0029,C,S. CLAIRE OF ASSISI,Claire of Assisi,,IMG_3233,high,visible_label_only,
-REL-0030,C,S. CLEMENS MARIA HOFBAUER,Clemens Maria Hofbauer,,IMG_3233,high,visible_label_only,
+REL-0001,A,S. ANDREW CORSINI,Andrew Corsini,,IMG_3237,high,visible_label_only,
+REL-0002,A,S. ANGELO,Angelo,,IMG_3237,high,visible_label_only,
+REL-0003,A,S. ANICETUS,Anicetus,,IMG_3237,high,visible_label_only,
+REL-0004,A,S. ANNA MARIE TAIGI,Anna Maria Taigi,,IMG_3237,high,visible_label_only,Label reads Anna Marie Taigi.
+REL-0005,A,S. ANTONY MARY PUCCI,Antony Mary Pucci,,IMG_3236,medium,visible_label_only,Left label partly visible.
+REL-0006,A,S. ANTONIUS OF FLORENCE,Antoninus of Florence,,IMG_3236,high,visible_label_only,Label uses Antonius of Florence.
+REL-0007,A,S. APOLONIA,Apollonia,,IMG_3236,high,visible_label_only,Label spelling Apolonia.
+REL-0008,A,S. ARNOLD JANSSEN,Arnold Janssen,,IMG_3236,high,visible_label_only,
+REL-0009,A,S. BAPTISTA MANTUANUS,Baptista Mantuanus,,IMG_3236,high,visible_label_only,
+REL-0010,B,S. BEATRICE,Beatrice,,IMG_3235,high,visible_label_only,
+REL-0011,B,S. BEATRICE OF SILVA,Beatrice of Silva,,IMG_3235; IMG_3234,high,visible_label_only,
+REL-0012,B,S. BENEDICT XI,Benedict XI,,IMG_3235; IMG_3234,high,visible_label_only,
+REL-0013,B,S. BENEDICT JOSEPH LABRE,Benedict Joseph Labre,,IMG_3234,high,visible_label_only,
+REL-0014,B,S. BERNARD OF CLAIRVAUX,Bernard of Clairvaux,,IMG_3233; IMG_3234,high,visible_label_only,
+REL-0015,B,S. BLANDINA,Blandina,,IMG_3233,high,visible_label_only,
+REL-0016,B,S. BONAVENTURE,Bonaventure,,IMG_3233,high,visible_label_only,Project anchor label.
+REL-0017,C,S. BRIDGET OF SWEDEN,Bridget of Sweden,,IMG_3232,high,visible_label_only,
+REL-0018,C,S. BRIGIDA,Brigida,,IMG_3232,high,visible_label_only,
+REL-0019,C,S. CALLIXTUS I,Callixtus I,,IMG_3232; IMG_3231,high,visible_label_only,
+REL-0020,C,S. CAMILLUS DE LELLIS,Camillus de Lellis,,IMG_3232; IMG_3231,high,visible_label_only,
+REL-0021,C,S. CANADIAN MARTYRS,Canadian Martyrs,,IMG_3231,high,visible_label_only,Group label.
+REL-0022,C,S. CASSIAN OF IMOLA,Cassian of Imola,,IMG_3230,high,visible_label_only,
+REL-0023,C,S. CATHERINE LABOURE,Catherine Laboure,,IMG_3230,high,visible_label_only,
+REL-0024,C,"S. CECILIA, VALERIAN, TIBURTIUS","Cecilia, Valerian, Tiburtius",,IMG_3230,high,visible_label_only,Group label.
+REL-0025,C,S. CHARBEL MAKHLLOUF,Charbel Makhlouf,,IMG_3230,high,visible_label_only,Label spelling appears to read Makhlouf/Makhllouf; verify from crop.
+REL-0026,C,S. CHARLES GARNIER,Charles Garnier,,IMG_3229,high,visible_label_only,
+REL-0027,C,S. CHARLES LWANGA,Charles Lwanga,,IMG_3229,high,visible_label_only,
+REL-0028,C,S. CHRISTINA,Christina,,IMG_3229,high,visible_label_only,
+REL-0029,C,S. CLAIRE OF ASSISI,Claire of Assisi,,IMG_3229,high,visible_label_only,
+REL-0030,C,S. CLEMENS MARIA HOFBAUER,Clemens Maria Hofbauer,,IMG_3229,high,visible_label_only,
 REL-0031,D,S. DAMIAN,Damian,,IMG_3228,medium,visible_label_only,
 REL-0032,D,S. DOMINIC BARBERI,Dominic Barberi,,IMG_3228,high,visible_label_only,
 REL-0033,D,S. DOMINIC DE GUZMAN,Dominic de Guzman,,IMG_3228,high,visible_label_only,
 REL-0034,D,S. DOMINIC SAVIO,Dominic Savio,,IMG_3228,high,visible_label_only,
-REL-0035,FG,S. FERDINAND III OF CASTILE,Ferdinand III of Castile,,IMG_3230,high,visible_label_only,
-REL-0036,FG,S. FLORIAN,Florian,,IMG_3230,high,visible_label_only,
-REL-0037,FG,S. FRANCIS DE SALES,Francis de Sales,,IMG_3230,high,visible_label_only,
-REL-0038,FG,S. FRANCIS OF ASSISI,Francis of Assisi,,IMG_3230,high,visible_label_only,
-REL-0039,FG,"S. FRANCIS OF ASSISI, CLARE","Francis of Assisi and Clare",,IMG_3231,high,visible_label_only,Composite/group label.
-REL-0040,FG,S. FRANCIS OF HIERONYMO,Francis of Hieronymo,,IMG_3231,high,visible_label_only,Likely Francis de Geronimo; verify against label/certificate.
-REL-0041,FG,S. FRANCIS OF ROME,Frances of Rome,,IMG_3229,high,visible_label_only,Label reads Francis of Rome; likely Frances of Rome.
-REL-0042,FG,S. FRANCIS SOLANO,Francis Solano,,IMG_3229,high,visible_label_only,
-REL-0043,FG,S. GABRIEL LALEMENT,Gabriel Lalemant,,IMG_3229,high,visible_label_only,Label appears Lalement; standard spelling Lalemant.
+REL-0035,FG,S. FERDINAND III OF CASTILE,Ferdinand III of Castile,,IMG_3227,high,visible_label_only,
+REL-0036,FG,S. FLORIAN,Florian,,IMG_3227,high,visible_label_only,
+REL-0037,FG,S. FRANCIS DE SALES,Francis de Sales,,IMG_3227,high,visible_label_only,
+REL-0038,FG,S. FRANCIS OF ASSISI,Francis of Assisi,,IMG_3227,high,visible_label_only,
+REL-0039,FG,"S. FRANCIS OF ASSISI, CLARE","Francis of Assisi and Clare",,IMG_3226,high,visible_label_only,Composite/group label.
+REL-0040,FG,S. FRANCIS OF HIERONYMO,Francis of Hieronymo,,IMG_3226,high,visible_label_only,Likely Francis de Geronimo; verify against label/certificate.
+REL-0041,FG,S. FRANCIS OF ROME,Frances of Rome,,IMG_3225,high,visible_label_only,Label reads Francis of Rome; likely Frances of Rome.
+REL-0042,FG,S. FRANCIS SOLANO,Francis Solano,,IMG_3225,high,visible_label_only,
+REL-0043,FG,S. GABRIEL LALEMENT,Gabriel Lalemant,,IMG_3225,high,visible_label_only,Label appears Lalement; standard spelling Lalemant.
 REL-0044,FG,S. GABRIEL LADY OF SORROWS,Gabriel of Our Lady of Sorrows,,IMG_3224,high,visible_label_only,
 REL-0045,FG,S. GASPAR DEL BUFALO,Gaspar del Bufalo,,IMG_3224,high,visible_label_only,
 REL-0046,FG,S. GEMMA GALGANI,Gemma Galgani,,IMG_3224,high,visible_label_only,
@@ -68,34 +68,34 @@ REL-0066,HIJ,S. JOSAPHAT KUNTSEVYCH,Josaphat Kuntsevych,,IMG_3217,medium,visible
 REL-0067,HIJ,S. JOSEPH OF ARIMATHAEA,Joseph of Arimathea,,IMG_3217,high,visible_label_only,
 REL-0068,HIJ,S. JOSEPH CALASANCTIUS,Joseph Calasanctius,,IMG_3217,high,visible_label_only,
 REL-0069,HIJ,S. JOSEPH PIGNATELLI,Joseph Pignatelli,,IMG_3217,high,visible_label_only,
-REL-0070,HIJ,S. JOSEPH OF LEONESSA,Joseph of Leonessa,,IMG_3203; IMG_3232,high,visible_label_only,
-REL-0071,LM,S. LADISLAUS,Ladislaus,,IMG_3212,high,visible_label_only,
-REL-0072,LM,S. LAWRENCE,Lawrence,,IMG_3212,high,visible_label_only,
-REL-0073,LM,S. LAWRENCE OF BRINDISI,Lawrence of Brindisi,,IMG_3212,high,visible_label_only,
-REL-0074,LM,S. LONGINUS,Longinus,S. Longini M.,IMG_3212; IMG_3211,high,visible_label_plus_theca,Close-up shows Latin inscription S. Longini M.
-REL-0075,LM,S. LOUIS GRIGNION,Louis Grignion de Montfort,,IMG_3212,high,visible_label_only,
-REL-0076,LM,S. LUCIUS,Lucius,,IMG_3213,high,visible_label_only,
-REL-0077,LM,S. LUIGI ORIONE,Luigi Orione,,IMG_3213; IMG_3214,high,visible_label_only,
-REL-0078,LM,S. MADELINE SOPHIA BARAT,Madeleine Sophie Barat,,IMG_3213; IMG_3214,high,visible_label_only,Label spells Madeline Sophia Barat.
-REL-0079,LM,S. MARCELLUS,Marcellus,,IMG_3213; IMG_3214,high,visible_label_only,
+REL-0070,HIJ,S. JOSEPH OF LEONESSA,Joseph of Leonessa,,IMG_3203; IMG_3238,high,visible_label_only,
+REL-0071,LM,S. LADISLAUS,Ladislaus,,IMG_3215,high,visible_label_only,
+REL-0072,LM,S. LAWRENCE,Lawrence,,IMG_3215,high,visible_label_only,
+REL-0073,LM,S. LAWRENCE OF BRINDISI,Lawrence of Brindisi,,IMG_3215,high,visible_label_only,
+REL-0074,LM,S. LONGINUS,Longinus,S. Longini M.,IMG_3215; IMG_3216,high,visible_label_plus_theca,Close-up shows Latin inscription S. Longini M.
+REL-0075,LM,S. LOUIS GRIGNION,Louis Grignion de Montfort,,IMG_3215,high,visible_label_only,
+REL-0076,LM,S. LUCIUS,Lucius,,IMG_3214,high,visible_label_only,
+REL-0077,LM,S. LUIGI ORIONE,Luigi Orione,,IMG_3214,high,visible_label_only,
+REL-0078,LM,S. MADELINE SOPHIA BARAT,Madeleine Sophie Barat,,IMG_3214; IMG_3213,high,visible_label_only,Label spells Madeline Sophia Barat.
+REL-0079,LM,S. MARCELLUS,Marcellus,,IMG_3214; IMG_3213,high,visible_label_only,
 REL-0080,LM,S. MARGARET AKA MARINA,Margaret / Marina,,IMG_3214,high,visible_label_only,
-REL-0081,LM,S. MARIA GORETTI,Maria Goretti,,IMG_3215,high,visible_label_only,
-REL-0082,LM,S. MARK,Mark,,IMG_3215,high,visible_label_only,
-REL-0083,LM,S. MARK EVANGELIST,Mark the Evangelist,,IMG_3215,high,visible_label_only,
-REL-0084,LM,S. MARTIN DE PORRES,Martin de Porres,,IMG_3215,high,visible_label_only,
-REL-0085,LM,S. MATTHEW,Matthew,,IMG_3216,high,visible_label_only,
-REL-0086,LM,S. MAURICE,Maurice,,IMG_3216,high,visible_label_only,
-REL-0087,LM,S. OLIVER PLUKETT,Oliver Plunkett,,IMG_3216,high,visible_label_only,Label spells Plukett; standard Plunkett.
-REL-0088,P,S. PATRICK,Patrick,,IMG_3209,medium,visible_label_only,
-REL-0089,P,S. PAUL MIKI,Paul Miki,,IMG_3209,high,visible_label_only,
-REL-0090,P,PAUL OF THE CROSS + PHILIP NERI,Paul of the Cross and Philip Neri,,IMG_3209,high,visible_label_only,Composite label.
-REL-0091,P,S. PAUL OF THE CROSS,Paul of the Cross,,IMG_3209,high,visible_label_only,Multiple adjacent labels visible.
-REL-0092,P,PAUL OF THE CROSS,Paul of the Cross,,IMG_3209,high,visible_label_only,Repeated label; verify whether duplicate theca or display split.
-REL-0093,P,S. PETER,Peter,,IMG_3210,high,visible_label_only,
-REL-0094,P,S. PETER CANISIUS,Peter Canisius,,IMG_3210,high,visible_label_only,
-REL-0095,P,S. PETER JULIAN EYMARD,Peter Julian Eymard,,IMG_3210,high,visible_label_only,
-REL-0096,P,S. PETER NOLASCO,Peter Nolasco,,IMG_3210,high,visible_label_only,
-REL-0097,P,S. PHILIP,Philip,,IMG_3210,high,visible_label_only,
+REL-0081,LM,S. MARIA GORETTI,Maria Goretti,,IMG_3213,high,visible_label_only,
+REL-0082,LM,S. MARK,Mark,,IMG_3213,high,visible_label_only,
+REL-0083,LM,S. MARK EVANGELIST,Mark the Evangelist,,IMG_3213,high,visible_label_only,
+REL-0084,LM,S. MARTIN DE PORRES,Martin de Porres,,IMG_3213,high,visible_label_only,
+REL-0085,LM,S. MATTHEW,Matthew,,IMG_3211,high,visible_label_only,
+REL-0086,LM,S. MAURICE,Maurice,,IMG_3211,high,visible_label_only,
+REL-0087,LM,S. OLIVER PLUKETT,Oliver Plunkett,,IMG_3211,high,visible_label_only,Label spells Plukett; standard Plunkett.
+REL-0088,P,S. PATRICK,Patrick,,IMG_3210,medium,visible_label_only,
+REL-0089,P,S. PAUL MIKI,Paul Miki,,IMG_3210,high,visible_label_only,
+REL-0090,P,PAUL OF THE CROSS + PHILIP NERI,Paul of the Cross and Philip Neri,,IMG_3210,high,visible_label_only,Composite label.
+REL-0091,P,S. PAUL OF THE CROSS,Paul of the Cross,,IMG_3210,high,visible_label_only,Multiple adjacent labels visible.
+REL-0092,P,PAUL OF THE CROSS,Paul of the Cross,,IMG_3210,high,visible_label_only,Repeated label; verify whether duplicate theca or display split.
+REL-0093,P,S. PETER,Peter,,IMG_3209,high,visible_label_only,
+REL-0094,P,S. PETER CANISIUS,Peter Canisius,,IMG_3209,high,visible_label_only,
+REL-0095,P,S. PETER JULIAN EYMARD,Peter Julian Eymard,,IMG_3209,high,visible_label_only,
+REL-0096,P,S. PETER NOLASCO,Peter Nolasco,,IMG_3209,high,visible_label_only,
+REL-0097,P,S. PHILIP,Philip,,IMG_3209,high,visible_label_only,
 REL-0098,P,S. PIUS I,Pius I,,IMG_3207; IMG_3208,high,visible_label_only,
 REL-0099,P,S. PIUS X,Pius X,,IMG_3207; IMG_3208,high,visible_label_only,
 REL-0100,P,S. PONTIAN,Pontian,,IMG_3207; IMG_3208,high,visible_label_only,
