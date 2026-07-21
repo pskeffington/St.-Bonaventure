@@ -1,0 +1,21 @@
+{
+  "schema_version":"portfolio-valuation-manifest/v1",
+  "repository":"pskeffington/St.-Bonaventure",
+  "portfolio_valuator":"pskeffington/Portfolio",
+  "valuation_status":"aligned_internal_estimate",
+  "market_lane":"translation/archive/document provenance",
+  "maturity_stage":"active",
+  "evidence_grade":"B",
+  "product_surface":"manuscript_report_scaffold",
+  "integration_role":"historical-document and provenance proof case for Eagle-Eye and TRANS",
+  "public_safety_status":"clean",
+  "risk_level":"medium",
+  "current_value_range_usd":{"low":25000,"high":200000},
+  "forward_value_range_usd":{"low":250000,"high":1500000},
+  "collateral_treatment":"Supporting archival research asset; apply rights, provenance, reproducibility, market demand, and liquidation discounts.",
+  "evidence_paths":["README.md","portfolio_valuation_manifest.json"],
+  "next_value_unlocks":["formalize source provenance","produce reproducible extraction samples","connect to document-intelligence proof packet"],
+  "missing_financial_inputs":["revenue","licensing","rights clearance","customer adoption","independent appraisal"],
+  "claim_boundary":"No authenticity, authorship, institutional, or market-value claim beyond documented provenance.",
+  "last_aligned_on":"2026-07-21"
+}
