@@ -1,56 +1,54 @@
 # St. Bonaventure Reliquary Research & Indexing
 
-This repository is a public research and indexing workspace for a Catholic reliquary associated with St. Bonaventure and containing more than 200 relics. The purpose is to preserve the visual record, identify the physical arrangement of the reliquary, transcribe visible saint labels, and build a source-verified theological and historical archive suitable for parish, academic, and public-history publication.
+Public research and indexing workspace for a Catholic reliquary associated with St. Bonaventure and containing more than 200 relics. The project preserves the visual record, indexes the physical arrangement, transcribes visible labels, and develops a source-verified theological and historical archive suitable for parish, academic, and public-history use.
 
-## Current status
+**Maintainer:** Paul Skeffington, MS, MPH  
+**Repository status:** active archival, provenance, and public-history research workspace; object identity and authenticity remain subject to documentary verification.  
+**Last documentation refresh:** 2026-08-17
 
-Updated at end of day, 2026-05-23.
+## Public-interest research boundary
 
-The current repository state contains the committed original image archive, a visible-label relic index, a saint/entity object register, source-control documentation, publication-roadmap materials, a working literature review, validation tooling, crop-generation tooling, and a visual classification aide for future white-background object photographs.
+This repository is maintained for archival scholarship, religious material-culture research, public history, provenance documentation, and reproducible indexing.
 
-Current working counts:
+It does not authenticate relics solely from photographs or visible labels, issue ecclesiastical determinations, replace diocesan or specialist review, assign devotional status, or treat provisional transcriptions as verified provenance. Public claims should preserve the distinction between visible evidence, documentary evidence, scholarly interpretation, and unresolved uncertainty.
 
-| Item | Count |
-|---|---:|
-| Original JPG files | 36 |
-| Visible relic records | 112 |
-| Working saint/entity objects | 113 |
-| Identity-review objects | 19 |
-| Label-review objects | 5 |
-| Canonical-status review objects | 3 |
-| Sensitive review objects | 1 |
+## Current research status
 
-The current index is based on visible labels in the photographs and must be treated as a working transcription until each label, theca inscription, and authentication document is verified.
+- Stage: structured cataloging and provenance-review workspace
+- Evidence status: image archive, visible-label index, entity register, and validation tooling available; documentary verification remains incomplete
+- Data status: repository-controlled images, structured catalog records, source notes, and publication-support materials
+- Primary limitation: visible labels and image evidence alone cannot establish relic identity, class, provenance, or authenticity
+
+The current index should therefore be treated as a working transcription layer rather than a completed authenticated catalog.
 
 ## Repository structure
 
 ```text
 data/
-  relic_index_visible.csv          Working index of visible labels from uploaded images
-  relic_catalog_master.csv         Master catalog schema; not yet populated
-  reliquary_sections.csv           Physical section map for visible cases
+  relic_index_visible.csv          Working index of visible labels
+  relic_catalog_master.csv         Master catalog schema
+  reliquary_sections.csv           Physical section map
   saint_objects.jsonl              Working saint/entity object register
   saint_object_summary.csv         Current object-count summary
-  image_file_register.csv          Original image checksum and dimension register
-  crop_manifest.csv                Coordinate manifest for deterministic crop generation
-  visual_class_taxonomy.csv        Visual classification taxonomy for researcher triage
+  image_file_register.csv          Image checksum and dimension register
+  crop_manifest.csv                Deterministic crop manifest
+  visual_class_taxonomy.csv        Researcher-triage taxonomy
   literature_review_sources.csv    Source-verification tracker
 
 docs/
-  cataloging_protocol.md           Rules for transcription, verification, and metadata control
-  image_manifest.md                Uploaded image filenames and indexing role
-  section_map.md                   Narrative section identification and case layout
+  cataloging_protocol.md           Transcription and verification rules
+  image_manifest.md                Image filenames and indexing role
+  section_map.md                   Section identification and case layout
   current_status.md                Current working status
-  end_of_day_2026-05-23.md         End-of-day project notes
   crop_workflow.md                 Coordinate crop workflow
   white_background_auto_crop.md    White-background crop/classification workflow
-  operational_roadmap.md           Publication roadmap
+  operational_roadmap.md           Historical publication roadmap filename
   academic_press_requirements.md   Press-package requirements
 
 scripts/
   validate_catalog.py              Repository/catalog validation
-  generate_crops.py                Deterministic crops from crop_manifest.csv
-  auto_crop_white_background.py    White-background auto-crop and visual classification aide
+  generate_crops.py                Deterministic crop generation
+  auto_crop_white_background.py    White-background crop/classification aide
 
 manuscript/
   archive_note.md                  Draft public-facing archive note
@@ -62,33 +60,42 @@ templates/
   press_proposal_template.md       Press-proposal template
 ```
 
-## Section logic
+## Provenance and verification model
 
-The reliquary appears to be organized primarily by saint name, broadly alphabetical, across a sequence of horizontal wall cases. The first pass divides the photographed structure into case sections rather than theological categories. This preserves physical provenance before interpretive classification.
+Nothing in this repository should be described as authenticated solely from image evidence. Keep these evidence types separate:
 
-Current working sections:
+- `visible_label`
+- `theca_inscription`
+- authentication or provenance documents
+- scholarly reference sources
+- researcher interpretation
+- `verification_status`
 
-- Section A: A-series saints and early B-series transition
-- Section B: B-series saints, including Beatrice, Benedict, Bernard, Blandina, Bonaventure
-- Section C: C-series saints and related martyr groupings
-- Section D: D-series saints, including Damian and Dominican saints
-- Section E/F/G: Franciscan, Passionist, Jesuit, and Gregory/Gemma/Gaspar/Gabriel groupings visible across the same sequence
-- Section H/I/J: Hilary through Joseph/John groupings
-- Section L/M: Ladislaus through Martin/Matthew/Maurice/Oliver sequence
-- Section P: Paul, Peter, Philip, Pius, Pontian sequence
-- Section R/S/T: Robert Bellarmine through Rose, Simon, Stanislaus, Stephen, and Theresa sequence
+A visible saint label identifies a display position or transcription candidate; it does not independently prove relic identity, class, provenance, or authenticity.
 
-## Handling rule
+## Current research priorities
 
-Nothing in this repository should be described as authenticated solely from image evidence. Use `visible_label`, `theca_inscription`, document/provenance fields, and `verification_status` separately. A saint label identifies the display position; it does not by itself prove relic identity, class, provenance, or authenticity.
+1. Continue catalog validation and provenance review.
+2. Generate and review label and theca crops where image quality permits.
+3. Populate `data/relic_catalog_master.csv` with explicit evidence status.
+4. Add stable physical-location fields such as `case_id`, `panel_id`, and `display_order`.
+5. Draft pilot saint notes with source citations and uncertainty labels.
+6. Verify Catechism, canon-law, hagiographic, and historical references before publication-weight use.
+7. Keep historical milestones in dated documentation rather than using them as the headline project status.
 
-## Current next work
+## Documentation standards
 
-1. Confirm the validation workflow status.
-2. Use current wall-case images for provisional crop/catalog development only.
-3. Prepare photographer instructions for publication-grade relic/object images.
-4. Generate label and theca crops where possible.
-5. Populate `data/relic_catalog_master.csv`.
-6. Add `case_id`, `panel_id`, and `display_order`.
-7. Draft pilot saint notes.
-8. Verify Catechism paragraph references, canon-law references, and literature metadata.
+- Preserve original image provenance and checksums.
+- Keep transcription separate from interpretation.
+- Record source citations and verification status for every substantive identity or historical claim.
+- Use uncertainty labels when inscriptions, names, or documentary evidence are incomplete.
+- Avoid describing provisional catalog records as authenticated objects.
+- Keep publication-facing prose traceable to catalog records and source notes.
+
+## Supported contribution
+
+A reproducible archival and public-history framework for indexing, documenting, and researching a reliquary while preserving evidence provenance and uncertainty.
+
+## Unsupported contribution
+
+No image-only authentication, ecclesiastical determination, devotional ruling, or unsupported provenance claim is made.
