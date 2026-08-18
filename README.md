@@ -42,7 +42,7 @@ docs/
   current_status.md                Current working status
   crop_workflow.md                 Coordinate crop workflow
   white_background_auto_crop.md    White-background crop/classification workflow
-  operational_roadmap.md           Historical publication roadmap filename
+  publication_roadmap.md           Scholarly publication roadmap
   academic_press_requirements.md   Press-package requirements
 
 scripts/
