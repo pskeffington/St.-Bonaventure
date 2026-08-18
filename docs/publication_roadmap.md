@@ -1,4 +1,4 @@
-# Operational Roadmap for Publication
+# Publication Roadmap
 
 ## Mission
 
