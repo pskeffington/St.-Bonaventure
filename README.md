@@ -99,3 +99,14 @@ A reproducible archival and public-history framework for indexing, documenting, 
 ## Unsupported contribution
 
 No image-only authentication, ecclesiastical determination, devotional ruling, or unsupported provenance claim is made.
+
+## Valuation tracking
+
+Current internal valuation status (2026-10-07 reviewed carry-forward):
+
+- repository current range: **$50K-$125K**
+- conditional forward range: **$125K-$350K**
+- maturity: **active**
+- evidence grade: **B+**
+
+The range covers the original cataloging, provenance, indexing, crop/validation, and public-history research framework. It excludes authenticity determinations, ecclesiastical determinations, devotional status, and third-party historical/source rights.
